@@ -35,7 +35,8 @@ function mainMenu() {
       'get address balance',
       'generate address',
       'archive address',
-      'unarchive address'
+      'unarchive address',
+      'send bitcoin'
     ]
   );
   return promptGet(['input']).then(function (inputs) {
@@ -46,6 +47,7 @@ function mainMenu() {
       case 3: return promptGet(['label']).then(generateAddress); break;
       case 4: return promptGet(['address']).then(archiveAddress); break;
       case 5: return promptGet(['address']).then(unarchiveAddress); break;
+      case 6: return promptGet(['to', 'amount', 'from']).then(makePayment); break;
       default: return q.reject('quitting');
     }
   }).then(mainMenu);
@@ -105,6 +107,17 @@ function unarchiveAddress(inputs) {
   }).then(function (result) {
     console.log(result);
     console.log('\nUnarchived: %s', result.active);
+  });
+}
+
+function makePayment(inputs) {
+  return callApi('/payment', guid, {
+    password: password,
+    to: inputs.to,
+    amount: inputs.amount,
+    from: inputs.from
+  }).then(function (result) {
+    console.log('\nPayment sent? %s', result.success);
   });
 }
 
