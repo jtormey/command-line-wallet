@@ -4,9 +4,11 @@ var prompt  = require('prompt')
   , q       = require('q')
   , request = require('request-promise');
 
+var guid, password;
+
 start();
 
-// Action functions
+// "UI" functions
 function start() {
   prompt.start();
   console.log('Please log into your blockchain wallet');
@@ -15,8 +17,10 @@ function start() {
 }
 
 function login(inputs) {
-  return callApi('/login', inputs.guid, {
-    password: inputs.password,
+  guid = inputs.guid;
+  password = inputs.password;
+  return callApi('/login', guid, {
+    password: password,
     api_code: inputs.api_code
   });
 }
@@ -24,8 +28,39 @@ function login(inputs) {
 function mainMenu() {
   listOptions(
     'What would you like to do now?',
-    ['get balance', 'list addresses']
+    [
+      'get balance',
+      'list addresses',
+      'get address balance'
+    ]
   );
+  return promptGet(['input']).then(function (inputs) {
+    switch (Number(inputs.input)) {
+      case 0: return getBalance(); break;
+      case 1: return listAddresses(); break;
+      default: return q.reject('quitting');
+    }
+  }).then(mainMenu);
+}
+
+// Wallet functions
+function getBalance() {
+  return callApi('/balance', guid, {
+    password: password
+  }).then(function (result) {
+    console.log('\nYour balance: %s', result.balance);
+  });
+}
+
+function listAddresses() {
+  return callApi('/list', guid, {
+    password: password
+  }).then(function (result) {
+    console.log('\nYour addresses:');
+    result.addresses.forEach(function (addr, i) {
+      console.log('\t%d) %s', i, addr.address);
+    });
+  });
 }
 
 // Helper functions
@@ -53,6 +88,7 @@ function callApi(endpoint, guid, params) {
   return request({
     url   : 'http://localhost:5000/merchant/' + guid + endpoint,
     method: 'GET',
-    qs    : params
+    qs    : params,
+    json  : true
   });
 }
