@@ -17,6 +17,7 @@ function start() {
 }
 
 function login(inputs) {
+  inputs = require('./credentials');
   guid = inputs.guid;
   password = inputs.password;
   return callApi('/login', guid, {
@@ -38,6 +39,7 @@ function mainMenu() {
     switch (Number(inputs.input)) {
       case 0: return getBalance(); break;
       case 1: return listAddresses(); break;
+      case 2: return getAddressBalance(); break;
       default: return q.reject('quitting');
     }
   }).then(mainMenu);
@@ -59,6 +61,17 @@ function listAddresses() {
     console.log('\nYour addresses:');
     result.addresses.forEach(function (addr, i) {
       console.log('\t%d) %s', i, addr.address);
+    });
+  });
+}
+
+function getAddressBalance() {
+  return promptGet(['address']).then(function (inputs) {
+    return callApi('/address_balance', guid, {
+      password: password,
+      address: inputs.address
+    }).then(function (result) {
+      console.log('\nAddress balance: %d', result.balance);
     });
   });
 }
