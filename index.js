@@ -33,7 +33,9 @@ function mainMenu() {
       'get balance',
       'list addresses',
       'get address balance',
-      'generate address'
+      'generate address',
+      'archive address',
+      'unarchive address'
     ]
   );
   return promptGet(['input']).then(function (inputs) {
@@ -42,6 +44,8 @@ function mainMenu() {
       case 1: return listAddresses(); break;
       case 2: return promptGet(['address']).then(getAddressBalance); break;
       case 3: return promptGet(['label']).then(generateAddress); break;
+      case 4: return promptGet(['address']).then(archiveAddress); break;
+      case 5: return promptGet(['address']).then(unarchiveAddress); break;
       default: return q.reject('quitting');
     }
   }).then(mainMenu);
@@ -82,6 +86,25 @@ function generateAddress(inputs) {
     label: inputs.label || undefined
   }).then(function (result) {
     console.log('\nNew address: %s', result.address);
+  });
+}
+
+function archiveAddress(inputs) {
+  return callApi('/archive_address', guid, {
+    password: password,
+    address: inputs.address
+  }).then(function (result) {
+    console.log('\nArchived: %s', result.archived);
+  });
+}
+
+function unarchiveAddress(inputs) {
+  return callApi('/unarchive_address', guid, {
+    password: password,
+    address: inputs.address
+  }).then(function (result) {
+    console.log(result);
+    console.log('\nUnarchived: %s', result.active);
   });
 }
 
