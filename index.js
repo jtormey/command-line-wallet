@@ -32,14 +32,16 @@ function mainMenu() {
     [
       'get balance',
       'list addresses',
-      'get address balance'
+      'get address balance',
+      'generate address'
     ]
   );
   return promptGet(['input']).then(function (inputs) {
     switch (Number(inputs.input)) {
       case 0: return getBalance(); break;
       case 1: return listAddresses(); break;
-      case 2: return getAddressBalance(); break;
+      case 2: return promptGet(['address']).then(getAddressBalance); break;
+      case 3: return promptGet(['label']).then(generateAddress); break;
       default: return q.reject('quitting');
     }
   }).then(mainMenu);
@@ -65,14 +67,21 @@ function listAddresses() {
   });
 }
 
-function getAddressBalance() {
-  return promptGet(['address']).then(function (inputs) {
-    return callApi('/address_balance', guid, {
-      password: password,
-      address: inputs.address
-    }).then(function (result) {
-      console.log('\nAddress balance: %d', result.balance);
-    });
+function getAddressBalance(inputs) {
+  return callApi('/address_balance', guid, {
+    password: password,
+    address: inputs.address
+  }).then(function (result) {
+    console.log('\nAddress balance: %d', result.balance);
+  });
+}
+
+function generateAddress(inputs) {
+  return callApi('/new_address', guid, {
+    password: password,
+    label: inputs.label || undefined
+  }).then(function (result) {
+    console.log('\nNew address: %s', result.address);
   });
 }
 
