@@ -17,7 +17,7 @@ function start() {
 }
 
 function login(inputs) {
-  inputs = require('./credentials');
+  inputs = importCredentials() || inputs;
   guid = inputs.guid;
   password = inputs.password;
   return callApi('/login', guid, {
@@ -139,6 +139,11 @@ function listOptions(desc, opts) {
 
 function inputErr(err) {
   console.log('Oh no! Error: %s', err);
+}
+
+function importCredentials() {
+  try {       return require('./credentials');  }
+  catch (e) { return false;                     }
 }
 
 // Network
