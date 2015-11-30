@@ -1,5 +1,5 @@
 {
-  "name": "service-my-wallet-v3-proj",
+  "name": "service-my-wallet-v3-example",
   "version": "0.0.0",
   "description": "built off service-my-wallet-v3",
   "main": "index.js",
