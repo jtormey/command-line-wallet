@@ -1,7 +1,7 @@
 {
-  "name": "service-my-wallet-v3-example",
+  "name": "command-line-wallet",
   "version": "0.0.0",
-  "description": "built off service-my-wallet-v3",
+  "description": "Blockchain.info command line wallet built off service-my-wallet-v3",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
